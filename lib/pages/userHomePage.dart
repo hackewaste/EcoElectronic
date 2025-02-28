@@ -1,14 +1,19 @@
+import 'package:ewaste/pages/leaderboards.dart';
+import 'package:ewaste/pages/leaderboards1.dart';
+import 'package:ewaste/presentations/user/DYK/recycling_steps.dart';
+import 'package:ewaste/presentations/user/DisposalLocation/disposal_locations_page.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-//import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'NotificationPage.dart';
-import 'UserAccountPage.dart';
-import 'package:ewaste/pages/userHomePage.dart';
-import 'package:ewaste/pages/dropImage.dart';
+import 'package:ewaste/pages/profilepages/UserAccountPage1.dart';
+import 'package:ewaste/user/dropimage/dropimage.dart';
 import 'package:ewaste/pages/info.dart';
-import 'package:ewaste/pages/badges_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ewaste/pages/redeem.dart';
+import 'package:ewaste/pages/earnpage.dart';
+import 'package:ewaste/presentations/user/B2B/Details/enter_details_page.dart';
 
 
 class UserHomepage extends StatefulWidget {
@@ -39,13 +44,13 @@ int _currentIndex= 0;
     case 2: // Saved
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const BadgesWidget()), // Navigate to UserAccountPage
+        MaterialPageRoute(builder: (context) => const RewardsScreen()), // Navigate to UserAccountPage
       );
       break;
     case 3: // Profile (Redirect to Home)
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const UserAccountPage()), // Navigate to UserAccountPage
+        MaterialPageRoute(builder: (context) => const UserAccountPage(title: 'user profile',)), // Navigate to UserAccountPage
       );
       break;
   }
@@ -107,14 +112,16 @@ int _currentIndex= 0;
       children: [
         HeaderSection(context),
         const SizedBox(height: 24.0),
-        UpcomingEventsSection(),
+        UpcomingEventsSection(context),
         const SizedBox(height: 24.0),
         StepsSection(),
         const SizedBox(height: 24.0),
-        B2BPostSection(),
+        B2BPostSection(context),
         const SizedBox(height: 24.0),
-        InviteSection(),
+        InviteSection(context),
         const SizedBox(height: 24.0),
+        DisposalLocation(context),
+        const SizedBox(height:24.0),
         buildDateSelector(),
         const SizedBox(height: 24.0),
         buildDailyActivity(context), // Pass context here
@@ -154,7 +161,7 @@ Widget HeaderSection(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
-      color: Colors.green[100],
+      color: Colors.blue[400],
       borderRadius: BorderRadius.circular(12.0),
     ),
     child: Column(
@@ -177,12 +184,23 @@ Widget HeaderSection(BuildContext context) {
       ],
     ),
   );
+  
 }
 
-Widget UpcomingEventsSection() {
+Widget UpcomingEventsSection(BuildContext context) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+      ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RecyclingStepsPage()),
+            );
+        },
+        child: const Text('New Event'),
+      ),
+      const SizedBox(height: 8.0),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -282,7 +300,7 @@ Widget StepsSection() {
 }
 
 
-Widget B2BPostSection() {
+Widget B2BPostSection(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
@@ -303,13 +321,15 @@ Widget B2BPostSection() {
                 color: Colors.green,
               ),
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'See All',
-                style: TextStyle(color: Colors.green),
-              ),
-            ),
+        //     ElevatedButton(
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => EnterDetailsPage()),
+        //     );
+        //   },
+        //   child: const Text('Sell Now'),
+        // ),
           ],
         ),
         const SizedBox(height: 16.0),
@@ -335,13 +355,6 @@ Widget B2BPostSection() {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
-                          Text(
-                            'Bulk Scrap Request For Industries',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
-                            ),
-                          ),
                           SizedBox(height: 4.0),
                           Text(
                             'Make it easy for yourself to sell your scrap.',
@@ -353,67 +366,20 @@ Widget B2BPostSection() {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                        child: const Text('Sell Now'),
-                      ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EnterDetailsPage()),
+            );
+          },
+          child: const Text('Sell Now'),
+        ),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(width: 8.0),
-            Expanded(
-              child: Card(
-                elevation: 2.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.asset(
-                      'assets/images.png',
-                      height: 100,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Bulk Scrap Request For Modern Needs',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            'Effortlessly request and manage your scrap sales.',
-                            style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                        child: const Text('Sell Now'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            
           ],
         ),
       ],
@@ -421,7 +387,7 @@ Widget B2BPostSection() {
   );
 }
 
-Widget InviteSection() {
+Widget InviteSection(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
@@ -432,10 +398,17 @@ Widget InviteSection() {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Text(
-            'Earn tokens for each friend invited who makes a donation'),
+          'Earn tokens for each friend invited who makes a donation',
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 8.0),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EarnPage()),
+            );
+          },
           child: const Text('Invite Now'),
         ),
       ],
@@ -443,64 +416,95 @@ Widget InviteSection() {
   );
 }
 
-// Widget OverallStatisticsSection() {
-//   return Card(
-//     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-//     child: Padding(
-//       padding: const EdgeInsets.all(16.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           const Text(
-//             'Overall statistics',
-//             style: TextStyle(
-//               fontSize: 20,
-//               fontWeight: FontWeight.bold,
-//               color: Color(0xFF324F5E),
-//             ),
-//           ),
-//           const SizedBox(height: 20),
-//           SizedBox(
-//             height: 200,
-//             child: BarChart(
-//               BarChartData(
-//                 alignment: BarChartAlignment.spaceAround,
-//                 maxY: 8,
-//                 barTouchData: BarTouchData(enabled: false),
-//                 titlesData: FlTitlesData(show: false),
-//                 borderData: FlBorderData(show: false),
-//                 barGroups: [
-//                   _buildBarGroup(0, 6, Colors.green),
-//                   _buildBarGroup(1, 4, Colors.red),
-//                   _buildBarGroup(2, 7, Colors.amber),
-//                   _buildBarGroup(3, 5, Colors.green),
-//                   _buildBarGroup(4, 3, Colors.red),
-//                   _buildBarGroup(5, 4, Colors.green),
-//                   _buildBarGroup(6, 5, Colors.amber),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     ),
-//   );
-// }
+Widget DisposalLocation(BuildContext context) {
+  return Container(
+    padding: const EdgeInsets.all(16.0),
+    decoration: BoxDecoration(
+      color: Colors.blue[50],
+      borderRadius: BorderRadius.circular(12.0),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Text(
+          'Disposal Locations where you can see locations to deposit the waste',
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8.0),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => DisposalLocationsPage()),
+            );
+          },
+          child: const Text('See the Locations'),
+        ),
+      ],
+    ),
+  );
+}
 
-//  BarChartGroupData _buildBarGroup(int x, double y, Color color) {
-//     return BarChartGroupData(
-//       x: x,
-//       barRods: [
-//         BarChartRodData(
-//           fromY: 0,           // Starting point of the bar (can be 0 or any other value)
-//           toY: y,             // Ending point of the bar (replace 'y' with the actual value, it should be a valid double)
-//           color: color,       // The color of the bar
-//           width: 20,          // The width of the bar
-//           borderRadius: const BorderRadius.vertical(top: Radius.circular(6)), // Styling the bar's top border
-//         )
-//       ],
-//     );
-//   }
+
+
+Widget OverallStatisticsSection() {
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Overall statistics',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF324F5E),
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 200,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                maxY: 8,
+                barTouchData: BarTouchData(enabled: false),
+                titlesData: FlTitlesData(show: false),
+                borderData: FlBorderData(show: false),
+                barGroups: [
+                  _buildBarGroup(0, 6, Colors.green),
+                  _buildBarGroup(1, 4, Colors.red),
+                  _buildBarGroup(2, 7, Colors.amber),
+                  _buildBarGroup(3, 5, Colors.green),
+                  _buildBarGroup(4, 3, Colors.red),
+                  _buildBarGroup(5, 4, Colors.green),
+                  _buildBarGroup(6, 5, Colors.amber),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+ BarChartGroupData _buildBarGroup(int x, double y, Color color) {
+    return BarChartGroupData(
+      x: x,
+      barRods: [
+        BarChartRodData(
+          fromY: 0,           // Starting point of the bar (can be 0 or any other value)
+          toY: y,             // Ending point of the bar (replace 'y' with the actual value, it should be a valid double)
+          color: color,       // The color of the bar
+          width: 20,          // The width of the bar
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(6)), // Styling the bar's top border
+        )
+      ],
+    );
+  }
 
 Widget buildDateSelector() {
     final now = DateTime.now();
@@ -619,7 +623,7 @@ Widget buildDailyActivity(BuildContext context) {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
+              MaterialPageRoute(builder: (context) => const RealTimeLeaderboard()),
             );
           },
           child: const Text(

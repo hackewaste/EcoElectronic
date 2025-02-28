@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ewaste/pages/map.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ewaste/pages/credits.dart';
-import 'package:ewaste/pages/dropImage.dart';
 
 class PickupRequestPage extends StatefulWidget {
   final String requestId;
@@ -127,17 +125,6 @@ class _PickupRequestPageState extends State<PickupRequestPage> {
     );
 
     // Navigate to the confirmation page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FinalPickupPage(
-          requestId: widget.requestId,
-          selectedDate: selectedDate,
-          selectedTime: selectedTime,
-          totalCredits: _totalCredits,
-        ),
-      ),
-    );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Error: $e')),

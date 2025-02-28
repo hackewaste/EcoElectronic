@@ -1,7 +1,7 @@
-import 'package:ewaste/pages/UserHomePage.dart';
+
+import 'package:ewaste/pages/userhomepage.dart';
 import 'package:ewaste/pages/VolunteerHomePage.dart';
 import 'package:ewaste/pages/login.dart';
-import 'package:ewaste/pages/dropImage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
