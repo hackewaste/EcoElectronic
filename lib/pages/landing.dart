@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'login.dart'; // Import your LoginPage from login.dart
 
-class GamificationScreen extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   @override
-  _GamificationScreenState createState() => _GamificationScreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _GamificationScreenState extends State<GamificationScreen> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Wait for 5 seconds, then navigate to the next screen
-    Future.delayed(Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => NextScreen()), // Change to your actual next screen
-      );
+    // Wait for 10 seconds, then an additional 2 seconds before navigating to the LoginPage.
+    Future.delayed(Duration(seconds: 3), () {
+      Future.delayed(Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      });
     });
   }
 
@@ -24,97 +26,36 @@ class _GamificationScreenState extends State<GamificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 40),
-                  Text(
-                    'Gamification & \nRewards -',
-                    style: TextStyle(
-                      fontSize: 32,
-                      color: Colors.grey[400],
-                      height: 1.2,
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Image.asset(
-                        'assets/logo.png', // Ensure this exists
-                        width: 250,
-                      ),
-                    ),
-                  ),
-                ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Logo image at the top
+            Image.asset(
+              'assets/logo.png', // Ensure this asset exists and is declared in pubspec.yaml
+              width: 250,
+            ),
+            const SizedBox(height: 20),
+            // Styled text "eco-electronic"
+            Text(
+              'eco-electronic',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[700],
+                letterSpacing: 2.0,
               ),
             ),
-          ),
-          // Bottom Section
-          Container(
-            padding: const EdgeInsets.all(32.0),
-            decoration: const BoxDecoration(
-              color: Color(0xFF7AB896), // Sage green color
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(0),
-                topRight: Radius.circular(0),
-              ),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  'Earn badges, track progress, and compete on leaderboards for sustainable e-waste disposal!',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    height: 1.4,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                // Dot indicators
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    4,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: index == 1
-                            ? const Color(0xFFE5A0B0) // Active dot
-                            : Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-// Replace this with the actual next screen
-class NextScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Text(
-          'Next Screen',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: SplashScreen(),
+  ));
 }

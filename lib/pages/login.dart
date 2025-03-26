@@ -1,124 +1,123 @@
-import 'package:ewaste/pages/register.dart';
-import 'package:ewaste/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:ewaste/services/auth_gate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ewaste/presentations/user/home/userHomePage.dart'; // Replace with your actual home screen
+import 'package:ewaste/presentations/volunteer/home/VolunteerHome.dart'; // Fixed import
+import 'package:ewaste/pages/register.dart';
+import 'package:ewaste/pages/onboarding1.dart'; // Import onboarding screen
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
-
+class LoginPage extends StatefulWidget {
   @override
-  State<Login> createState() => _LoginState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginState extends State<Login> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _pwController = TextEditingController();
-  bool _isLoggingIn = false;
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool isLoading = false;
 
-  void login(BuildContext context) async {
-    if (_isLoggingIn) return; // Prevent multiple login calls
-
+  Future<void> _login() async {
     setState(() {
-      _isLoggingIn = true; // Set logging-in flag
+      isLoading = true;
     });
 
-    final authService = AuthService();
-
     try {
-      await authService.signInWithEmailPassword(
-        _emailController.text.trim(),
-        _pwController.text.trim(),
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
+      
+      User? user = userCredential.user;
+      if (user != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+        if (!hasSeenOnboarding) {
+          await prefs.setBool('hasSeenOnboarding', true);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnboardingScreen(userId: user.uid)));
+        } else {
+          await _navigateAfterLogin(user.uid);
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = "Login failed: ${e.message}";
+      if (e.code == 'user-not-found') {
+        errorMessage = "No user found with this email.";
+      } else if (e.code == 'wrong-password') {
+        errorMessage = "Incorrect password.";
+      } else if (e.code == 'invalid-email') {
+        errorMessage = "Invalid email format.";
+      } else if (e.code == 'network-request-failed') {
+        errorMessage = "Check your internet connection.";
+      }
 
-      // Navigate to appropriate page after login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AuthGate()),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
       );
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(e.toString()),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An unexpected error occurred."), backgroundColor: Colors.red),
       );
-    } finally {
-      setState(() {
-        _isLoggingIn = false; // Reset logging-in flag
-      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> _navigateAfterLogin(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+    DocumentSnapshot volunteerDoc = await FirebaseFirestore.instance.collection('Volunteers').doc(userId).get();
+    
+    if (userDoc.exists) {
+      await prefs.setString('role', 'user');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserHomePage()));
+    } else if (volunteerDoc.exists) {
+      await prefs.setString('role', 'volunteer');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerHomePage1())); // Fixed
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("User role not found. Please sign up."), backgroundColor: Colors.orange),
+      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterPage()));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Login")),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Hello User",
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const Text(
-              "Welcome Back",
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 30),
             TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: "Enter your mail",
-                border: OutlineInputBorder(),
-              ),
+              controller: emailController,
+              decoration: InputDecoration(labelText: "Email"),
+              keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 10),
             TextField(
-              controller: _pwController,
+              controller: passwordController,
+              decoration: InputDecoration(labelText: "Password"),
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Enter your password",
-                border: OutlineInputBorder(),
-              ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoggingIn
-                  ? null
-                  : () => login(context), // Disable button while logging in
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              ),
-              child: _isLoggingIn
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text("Sign In", style: TextStyle(fontSize: 16)),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account? "),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RegisterPage()),
-                    );
-                  },
-                  child: const Text(
-                    "Sign up",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
+            SizedBox(height: 20),
+            isLoading
+                ? CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _login,
+                    child: Text("Login"),
                   ),
-                ),
-              ],
+            TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+              },
+              child: Text("Don't have an account? Sign up"),
             ),
           ],
         ),

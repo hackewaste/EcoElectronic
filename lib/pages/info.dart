@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import '../presentations/user/user_bottom_navigation.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
@@ -78,31 +79,7 @@ class _InfoPageState extends State<InfoPage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedBottomNavIndex, // Independent of the top navigation
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.black,
-        onTap: _onBottomNavSelected, // Updates bottom navigation index
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Explore',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Saved',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+        bottomNavigationBar: UserBottomNavigation(currentIndex: 1,)
     );
   }
 }
@@ -401,60 +378,26 @@ class FAQPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('FAQ'),
-      ),
-      body: ListView(
-        children: [
-          const InfoTile(
-            title: 'What is waste?',
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          ),
-          const InfoTile(
-            title: 'Waste Management',
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          ),
-          const InfoTile(
-            title: 'Importance of waste management',
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          ),
-          const InfoTile(
-            title: 'Types of waste',
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          ),
-          const SizedBox(height: 40),
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: _launchWhatsApp,
-              icon: const Icon(Icons.chat, color: Colors.white),
-              label: const Text(
-                'Connect with us on WhatsApp',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6A4CAF), // A bolder purple shade
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24), // More rounded corners
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
+    return ListView(
+      children: const [
+        InfoTile(
+          title: 'What is waste?',
+          content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        ),
+        InfoTile(
+          title: 'Waste Management',
+          content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        ),
+        InfoTile(
+          title: 'Importance of waste management',
+          content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        ),
+        InfoTile(
+          title: 'Types of waste',
+          content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        ),
+      ],
     );
-  }
-
-  void _launchWhatsApp() async {
-    const phoneNumber = '+1234567890'; // Replace with your phone number
-    final url = 'https://wa.me/$phoneNumber';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }
 

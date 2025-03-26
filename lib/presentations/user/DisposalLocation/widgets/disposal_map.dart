@@ -21,8 +21,8 @@ class DisposalMap extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterMap(
       options: MapOptions(
-        center: currentLocation ?? LatLng(19.0760, 72.8777),
-        zoom: 12.0,
+        initialCenter: currentLocation ?? LatLng(19.0760, 72.8777),
+        initialZoom: 12.0,
       ),
       children: [
         TileLayer(
@@ -36,7 +36,7 @@ class DisposalMap extends StatelessWidget {
                   width: 50.0,
                   height: 50.0,
                   point: currentLocation!,
-                  builder: (context) => Icon(
+                  child: Icon(
                     Icons.person_pin_circle,
                     color: Colors.blue.shade700,
                     size: 50.0,
@@ -54,7 +54,7 @@ class DisposalMap extends StatelessWidget {
       width: 50.0,
       height: 50.0,
       point: location,
-      builder: (context) => Icon(
+      child: Icon(
         Icons.location_on,
         color: Colors.red.shade700,
         size: 50.0,

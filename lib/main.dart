@@ -1,62 +1,72 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ewaste/firebase_options.dart';
-import 'package:ewaste/pages/VolunteerHomePage.dart';
-import 'package:ewaste/pages/leaderboards.dart';
-import 'package:ewaste/pages/leaderboards1.dart';
-import 'package:ewaste/pages/leaderbor(ewaste).dart';
-import 'package:ewaste/user/dropimage/dropimage.dart';
+
+import 'package:ewaste/data/services/detection_billing_services.dart';
+import 'package:ewaste/pages/landing.dart';
+import 'package:ewaste/pages/profilepages/UserAccountPage1.dart';
+import 'package:ewaste/presentations/volunteer/home/VolunteerHome.dart';
+import 'package:ewaste/pages/dropimageai(working).dart';
+import 'package:ewaste/pages/info.dart';
 import 'package:ewaste/pages/login.dart';
-import 'package:ewaste/services/auth_gate.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ewaste/pages/struserhome.dart';
+import 'package:ewaste/pages/onboarding1.dart';
+import 'package:ewaste/presentations/user/recycling_steps/computer_waste_recycling_process.dart';
+import 'package:ewaste/presentations/user/recycling_steps/recycling_dashboard.dart';
+import 'package:ewaste/presentations/user/recycling_steps/recycling_steps_timeline.dart';
+import 'package:ewaste/presentations/user/DisposalLocation/disposal_locations_page.dart';
+import 'package:ewaste/presentations/user/detection/detection_page.dart';
+import 'package:ewaste/presentations/user/home/userHomePage.dart';
+import 'package:ewaste/presentations/user/B2B/screens/Order_Summary.dart';
+import 'package:ewaste/presentations/user/B2B/screens/bulk_scrap_request.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:ewaste/pages/userHomePage.dart';
-import 'package:ewaste/pages/onboarding1.dart';
-import 'package:ewaste/pages/onboarding2.dart';
-import 'package:ewaste/pages/onboarding3.dart';
-import 'package:ewaste/pages/volunteerpages/theme_provider.dart';
-import 'package:provider/provider.dart'; // Ensure provider package is imported
-import 'package:ewaste/pages/redeem.dart';
+import 'package:provider/provider.dart';
 
+import 'data/models/selected_items_provider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure everything is loaded before runApp
+  await Firebase.initializeApp();
+  // Initialize Firebase
 
-  // Manually configure Firebase options
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SelectedItemsProvider()),
+      ],
+      child: MyApp(),
+    ),
   );
-
-  runApp(UserEwaste());
 }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-class UserEwaste extends StatelessWidget {
-   const UserEwaste({super.key});
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // Register ThemeProvider
-      ],
-      child: MaterialApp(
+    return MaterialApp(
+      title: 'EcoElectronic',
       debugShowCheckedModeBanner: false,
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasData) {
-            return DailyActivity(); //If logged in, go to homepage
-            //return RewardsScreen();
-
-          } else {
-            return Login(); // Otherwise, go to login
-          }
-          },
-        ),
+      home: SplashScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
     );
   }
 }
- 
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false, 
+//       home: Scaffold(
+//         appBar: AppBar(title: const Text("Test B2B Post Section")),
+//         body: Padding(
+//           padding: const EdgeInsets.all(16.0),
+//           child: OnboardingScreen(), // Call your widget here
+//         ),
+//       ),
+//     );
+//   }
+// }

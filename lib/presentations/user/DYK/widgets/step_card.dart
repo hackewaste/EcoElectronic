@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ewaste/data/recycling_steps.dart';
+import '../../../../data/models/recycling_steps.dart';
 
 
 class RecyclingStepCard extends StatelessWidget {
